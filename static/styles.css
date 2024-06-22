@@ -1,0 +1,81 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.page-header {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.page-header h1 {
+    font-size: 32px;
+    color: #333;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    height: 100vh;
+}
+
+.chat-box, .video-generator {
+    width: 48%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.chat-box {
+    background-color: #f9f9f9;
+}
+
+.video-generator {
+    background-color: #f9f9f9;
+}
+
+#chat-messages {
+    height: 300px;
+    overflow-y: auto;
+}
+
+#user-input {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#video-text {
+    width: calc(100% - 20px);
+    height: 100px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.video-container {
+    width: 80%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+video {
+    width: 80%;
+    height: auto;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}

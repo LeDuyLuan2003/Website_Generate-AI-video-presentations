@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat và Text-to-Video</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}">
+</head>
+<body>
+    <div class="page-header">
+        <h1>Let's Create the Presentation You Want</h1>
+    </div>
+
+    <div class="container">
+        <div class="chat-box">
+            <!-- Hộp chat -->
+            <h2>Chat Box</h2>
+            <div id="chat-messages">
+                <!-- Hiển thị tin nhắn chat -->
+                {% if user_message %}
+                    <p><strong>You:</strong> {{ user_message }}</p>
+                {% endif %}
+                {% if bot_response %}
+                    <p><strong>Bot:</strong> {{ bot_response }}</p>
+                {% endif %}
+            </div>
+            <form id="chat-form" onsubmit="sendMessage(event)">
+                <input type="text" name="user_message" id="user-input" placeholder="Viết tin nhắn của bạn...">
+                <button type="submit">Gửi</button>
+            </form>
+        </div>
+
+        <div class="video-generator">
+            <h2>Text-to-Video Generator</h2>
+            <form id="video-form" action="/generate-video" method="POST" enctype="multipart/form-data" onsubmit="generateVideo(event)">
+                
+                <div>
+                    <textarea id="video-text" name="video_text" rows="4" placeholder="Nhập văn bản để tạo video..." required></textarea>
+                </div>
+                <!-- Xóa phần upload hình ảnh -->
+                <!-- <div>
+                    <label for="image">Upload Image of Presenter:</label>
+                    <input type="file" id="image" name="image" accept="image/*" required>
+                </div> -->
+                <button type="submit">Tạo Video</button>
+            </form>
+            <div id="video-result" class="video-container">
+                <!-- Hiển thị kết quả video -->
+            </div>
+            <a id="download-button" style="display: none;" download="final_video.mp4">Download Video</a>
+        </div>
+
+    </div>
+
+    <script>
+        
+        function sendMessage(event) {
+            event.preventDefault();  // Ngăn chặn hành vi mặc định của biểu mẫu
+
+            var userInput = document.getElementById('user-input').value;
+            if (userInput.trim() !== '') {
+                // Gửi tin nhắn của người dùng đến server
+                fetch('/get_response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'user_message=' + encodeURIComponent(userInput)
+                })
+                .then(response => response.text())
+                .then(botResponse => {
+                    // Hiển thị tin nhắn của người dùng
+                    displayUserMessage(userInput);
+                    // Hiển thị phản hồi từ bot
+                    displayBotMessage(botResponse);
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                });
+
+                // Xóa nội dung trong ô nhập tin nhắn sau khi gửi
+                document.getElementById('user-input').value = '';
+            }
+        }
+
+        function displayUserMessage(message) {
+            var chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML += '<p><strong>Bạn:</strong> ' + message + '</p>';
+        }
+
+        function displayBotMessage(message) {
+            var chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML += '<p><strong>Bot:</strong> ' + message + '</p>';
+        }
+
+        function generateVideo(event) {
+            event.preventDefault();  // Ngăn chặn hành vi mặc định của biểu mẫu
+
+            var formData = new FormData(document.getElementById('video-form'));
+
+            fetch('/generate-video', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                var url = URL.createObjectURL(blob);
+                displayVideo(url);
+                enableDownloadButton(url);
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+            });
+        }
+
+        function displayVideo(url) {
+            var videoResult = document.getElementById('video-result');
+            videoResult.innerHTML = '<video controls><source src="' + url + '" type="video/mp4"></video>';
+        }
+
+        function enableDownloadButton(url) {
+            var downloadButton = document.getElementById('download-button');
+            downloadButton.style.display = 'block';
+            downloadButton.href = url;
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+API_KEY = "YourAPI-Key on the OpenAI"
